@@ -1,3 +1,23 @@
 import torch
 import torch.nn as nn
 import numpy as np
+
+class ResidualBlock(nn.modules):
+    def __init__(self, in_channels, out_cahnnels, stride = 1, downsample = None):
+        super(ResidualBlock, self).__init__()
+        self.
+
+class Darknet(nn.modules):
+    def __init__(self, in_channels, num_classes):
+        super(Darknet, self).__init__()
+        self.conv1 = nn.Conv2d(in_channels, 32, kernel_size = 3, 
+                               stride = 1, padding = 1)
+        self.bn1 = nn.BatchNorm2d(32)
+
+        self.layer1 = self._make_layer(residual_block, , layers[0])
+        self.layer2 = self._make_layer(residual_block, , layers[1])
+        self.layer3 = self._make_layer(residual_block, , layers[2])
+        self.layer4 = self._make_layer(residual_block, , layers[3])
+        self.layer5 = self._make_layer(residual_block, , layers[4])
+
+        self.avgpool = nn.AdaptiveAvgPool2d(1)
