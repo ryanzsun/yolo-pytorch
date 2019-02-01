@@ -4,14 +4,14 @@ import torch.nn.functional as F
 import numpy as np
 
 class ResidualBlock(nn.modules):
-    def __init__(self, in_channels, out_channels, stride = 1, downsample = None):
+    def __init__(self, channels, stride = 1, downsample = None):
         super(ResidualBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size = 1,
+        self.conv1 = nn.Conv2d(channels, channels * 2, kernel_size = 1,
                                stride = 1, padding = 1)
-        self.bn1 = nn.BatchNorm2d(out_channels)
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size = 3,)
+        self.bn1 = nn.BatchNorm2d(channels * 2)
+        self.conv2 = nn.Conv2d(channels * 2, channels, kernel_size = 3,)
                                stride = 1, padding = 1)
-        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.bn2 = nn.BatchNorm2d(channels)
 
     def forward(self, x):
         residual = x
@@ -33,5 +33,26 @@ class Darknet(nn.modules):
         self.layer3 = self._make_layer(residual_block, , layers[2])
         self.layer4 = self._make_layer(residual_block, , layers[3])
         self.layer5 = self._make_layer(residual_block, , layers[4])
+
+    def _make_layer(self, block, channels, blocks):
+        downsample = nn.Sequential(
+            nn.Conv2d(channels, channels * 2, kernel_size = 3, 
+                      stride = 2, padding = 1)
+            nn.BatchNorm2d(channels * 2)
+        )
+        layers = []
+        for _ in range(blocks):
+            layers.append(block(channels))
+
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = F.leaky_relu(self.bn1(self.conv1(x)))
+        
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+        x = self.layer5(x)
 
         
