@@ -17,13 +17,12 @@ class ResidualBlock(nn.Module):
         residual = x
         x = F.leaky_relu(self.bn1(self.conv1(x)))
         x = F.leaky_relu(self.bn2(self.conv2(x)))
-        print(x.shape)
         x = x + residual
         return x
 
 
 class Darknet(nn.Module):
-    def __init__(self, in_channels, num_classes, block, layers):
+    def __init__(self, in_channels, num_classes, num_anchors, block, layers):
         super(Darknet, self).__init__()
         self.conv1 = nn.Conv2d(in_channels, 32, kernel_size = 3, 
                                stride = 1, padding = 1)
@@ -34,6 +33,8 @@ class Darknet(nn.Module):
         self.layer3 = self._make_layer(block, 128, layers[2])
         self.layer4 = self._make_layer(block, 256, layers[3])
         self.layer5 = self._make_layer(block, 512, layers[4])
+
+        self.out = nn.Conv2d(1024, num_anchors * (5 + num_classes), kernel_size = 1, stride = 1)
 
     def _make_layer(self, block, channels, blocks):
         downsample = nn.Sequential(
@@ -48,16 +49,22 @@ class Darknet(nn.Module):
 
         return nn.Sequential(*layers)
 
+
     def forward(self, x):
         x = F.leaky_relu(self.bn1(self.conv1(x)))
+
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
         x = self.layer5(x)
 
+        x = self.out(x)
+
+        return x
+
         
 
-net = Darknet(3, 20, ResidualBlock, [1,2,8,8,4])
+net = Darknet(3, 20, 5, ResidualBlock, [1,2,8,8,4])
 d = torch.rand((1,3,416,416))
-net(d)
+print(net(d).shape)
