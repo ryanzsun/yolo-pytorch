@@ -34,7 +34,7 @@ class Darknet(nn.Module):
         self.layer4 = self._make_layer(block, 256, layers[3])
         self.layer5 = self._make_layer(block, 512, layers[4])
 
-        self.out = nn.Conv2d(1024, num_anchors * (5 + num_classes), kernel_size = 1, stride = 1)
+        self.out = nn.Conv2d(1024, num_anchors * (4 + 1 + num_classes), kernel_size = 1, stride = 1)
 
     def _make_layer(self, block, channels, blocks):
         downsample = nn.Sequential(
