@@ -65,6 +65,6 @@ class Darknet(nn.Module):
 
         
 
-net = Darknet(3, 20, 3, ResidualBlock, [1,2,8,8,4])
-d = torch.rand((1,3,416,416))
-print(net(d).shape)
+# net = Darknet(3, 20, 3, ResidualBlock, [1,2,8,8,4])
+# d = torch.rand((1,3,416,416))
+# print(net(d).shape)
