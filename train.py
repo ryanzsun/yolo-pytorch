@@ -52,4 +52,6 @@ else:
 
 model.train()
 
-optimizer = optim.Adam(model.parameters(), lr=opt.learning_rate, weight_decay=0.0005)
+optimizer = AdamW(model.parameters(), lr=opt.learning_rate, weight_decay=0.0005)
+scheduler = CyclicLRWithRestarts(optimizer, opt.batch_size, opt.epochs, restart_period=10, t_mult=2, policy="cosine")
+
